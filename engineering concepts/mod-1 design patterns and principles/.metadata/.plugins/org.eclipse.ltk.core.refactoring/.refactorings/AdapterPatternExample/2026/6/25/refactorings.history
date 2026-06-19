@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename compilation unit &apos;adapter.RazorPayAdapter.java&apos; to &apos;RazorpayAdapter.java&apos;&#x0D;&#x0A;- Original project: &apos;AdapterPatternExample&apos;&#x0D;&#x0A;- Original element: &apos;adapter.RazorPayAdapter.java&apos;&#x0D;&#x0A;- Renamed element: &apos;adapter.RazorpayAdapter.java&apos;" description="Rename compilation unit &apos;RazorPayAdapter.java&apos;" flags="2" id="org.eclipse.jdt.ui.rename.compilationunit" input="/src&lt;adapter{RazorPayAdapter.java" name="RazorpayAdapter.java" references="false" stamp="1781808244649" version="1.0"/>
+</session>

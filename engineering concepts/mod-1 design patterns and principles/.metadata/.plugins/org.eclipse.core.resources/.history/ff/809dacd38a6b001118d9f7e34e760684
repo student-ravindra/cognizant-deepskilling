@@ -1,0 +1,23 @@
+package observer;
+
+public class TestObserver {
+
+    public static void main(String[] args) {
+
+        StockMarket stockMarket = new StockMarket();
+
+        Observer mobileUser = new MobileApp("Ravi");
+        Observer webUser = new WebApp("Admin");
+
+        stockMarket.registerObserver(mobileUser);
+        stockMarket.registerObserver(webUser);
+
+        System.out.println("Stock Price Changed to 1000");
+        stockMarket.setStockPrice(1000);
+
+        System.out.println();
+
+        System.out.println("Stock Price Changed to 1200");
+        stockMarket.setStockPrice(1200);
+    }
+}
