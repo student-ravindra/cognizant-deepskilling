@@ -1,0 +1,209 @@
+-- =========================================
+-- EXERCISE 6 : CURSORS
+-- =========================================
+
+-- =========================================
+-- REQUIRED TABLES
+-- =========================================
+
+CREATE TABLE Customers (
+CustomerID NUMBER PRIMARY KEY,
+CustomerName VARCHAR2(100)
+);
+
+CREATE TABLE Accounts (
+AccountID NUMBER PRIMARY KEY,
+CustomerID NUMBER,
+Balance NUMBER(10,2)
+);
+
+CREATE TABLE Transactions (
+TransactionID NUMBER PRIMARY KEY,
+CustomerID NUMBER,
+Amount NUMBER(10,2),
+TransactionDate DATE
+);
+
+CREATE TABLE Loans (
+LoanID NUMBER PRIMARY KEY,
+CustomerID NUMBER,
+InterestRate NUMBER(5,2)
+);
+
+-- =========================================
+-- SAMPLE DATA
+-- =========================================
+
+INSERT INTO Customers VALUES (1,'Ravi');
+INSERT INTO Customers VALUES (2,'Priya');
+
+INSERT INTO Accounts VALUES (101,1,10000);
+INSERT INTO Accounts VALUES (102,2,15000);
+
+INSERT INTO Transactions
+VALUES (1,1,2000,SYSDATE);
+
+INSERT INTO Transactions
+VALUES (2,2,3000,SYSDATE);
+
+INSERT INTO Loans
+VALUES (201,1,8.5);
+
+INSERT INTO Loans
+VALUES (202,2,9.0);
+
+COMMIT;
+
+-- =========================================
+-- SCENARIO 1
+-- GenerateMonthlyStatements
+-- =========================================
+
+DECLARE
+
+```
+CURSOR GenerateMonthlyStatements IS
+    SELECT c.CustomerName,
+           t.TransactionID,
+           t.Amount,
+           t.TransactionDate
+    FROM Customers c
+    JOIN Transactions t
+    ON c.CustomerID = t.CustomerID
+    WHERE EXTRACT(MONTH FROM t.TransactionDate)
+          = EXTRACT(MONTH FROM SYSDATE)
+      AND EXTRACT(YEAR FROM t.TransactionDate)
+          = EXTRACT(YEAR FROM SYSDATE);
+
+v_record GenerateMonthlyStatements%ROWTYPE;
+```
+
+BEGIN
+
+```
+OPEN GenerateMonthlyStatements;
+
+LOOP
+    FETCH GenerateMonthlyStatements
+    INTO v_record;
+
+    EXIT WHEN GenerateMonthlyStatements%NOTFOUND;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Customer: ' || v_record.CustomerName ||
+        ', Transaction ID: ' || v_record.TransactionID ||
+        ', Amount: ' || v_record.Amount
+    );
+
+END LOOP;
+
+CLOSE GenerateMonthlyStatements;
+```
+
+END;
+/
+
+-- =========================================
+-- SCENARIO 2
+-- ApplyAnnualFee
+-- =========================================
+
+DECLARE
+
+```
+CURSOR ApplyAnnualFee IS
+    SELECT AccountID, Balance
+    FROM Accounts;
+
+v_account ApplyAnnualFee%ROWTYPE;
+
+v_fee NUMBER := 500;
+```
+
+BEGIN
+
+```
+OPEN ApplyAnnualFee;
+
+LOOP
+
+    FETCH ApplyAnnualFee
+    INTO v_account;
+
+    EXIT WHEN ApplyAnnualFee%NOTFOUND;
+
+    UPDATE Accounts
+    SET Balance = Balance - v_fee
+    WHERE AccountID = v_account.AccountID;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Annual Fee Applied to Account '
+        || v_account.AccountID
+    );
+
+END LOOP;
+
+CLOSE ApplyAnnualFee;
+
+COMMIT;
+```
+
+END;
+/
+
+-- =========================================
+-- SCENARIO 3
+-- UpdateLoanInterestRates
+-- =========================================
+
+DECLARE
+
+```
+CURSOR UpdateLoanInterestRates IS
+    SELECT LoanID,
+           InterestRate
+    FROM Loans;
+
+v_loan UpdateLoanInterestRates%ROWTYPE;
+```
+
+BEGIN
+
+```
+OPEN UpdateLoanInterestRates;
+
+LOOP
+
+    FETCH UpdateLoanInterestRates
+    INTO v_loan;
+
+    EXIT WHEN UpdateLoanInterestRates%NOTFOUND;
+
+    UPDATE Loans
+    SET InterestRate = InterestRate + 0.5
+    WHERE LoanID = v_loan.LoanID;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Interest Rate Updated for Loan '
+        || v_loan.LoanID
+    );
+
+END LOOP;
+
+CLOSE UpdateLoanInterestRates;
+
+COMMIT;
+```
+
+END;
+/
+
+-- =========================================
+-- VERIFY RESULTS
+-- =========================================
+
+SELECT * FROM Accounts;
+
+SELECT * FROM Loans;
+
+SELECT * FROM Transactions;

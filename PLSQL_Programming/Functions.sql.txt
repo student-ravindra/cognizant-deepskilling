@@ -1,0 +1,135 @@
+-- =========================================
+-- EXERCISE 4 : FUNCTIONS
+-- =========================================
+
+-- Create Accounts Table
+
+CREATE TABLE Accounts (
+AccountID NUMBER PRIMARY KEY,
+Balance NUMBER(10,2)
+);
+
+-- Sample Data
+
+INSERT INTO Accounts VALUES (101,5000);
+INSERT INTO Accounts VALUES (102,2000);
+
+COMMIT;
+
+-- =========================================
+-- SCENARIO 1
+-- CalculateAge Function
+-- =========================================
+
+CREATE OR REPLACE FUNCTION CalculateAge(
+p_dob DATE
+)
+RETURN NUMBER
+IS
+v_age NUMBER;
+BEGIN
+v_age := FLOOR(
+MONTHS_BETWEEN(
+SYSDATE,
+p_dob
+) / 12
+);
+
+```
+RETURN v_age;
+```
+
+END;
+/
+
+-- =========================================
+-- SCENARIO 2
+-- CalculateMonthlyInstallment Function
+-- =========================================
+
+CREATE OR REPLACE FUNCTION CalculateMonthlyInstallment(
+p_loan_amount NUMBER,
+p_interest_rate NUMBER,
+p_years NUMBER
+)
+RETURN NUMBER
+IS
+v_rate NUMBER;
+v_months NUMBER;
+v_emi NUMBER;
+BEGIN
+v_rate := p_interest_rate / (12 * 100);
+v_months := p_years * 12;
+
+```
+v_emi :=
+    (
+        p_loan_amount *
+        v_rate *
+        POWER(1 + v_rate, v_months)
+    )
+    /
+    (
+        POWER(1 + v_rate, v_months) - 1
+    );
+
+RETURN ROUND(v_emi,2);
+```
+
+END;
+/
+
+-- =========================================
+-- SCENARIO 3
+-- HasSufficientBalance Function
+-- =========================================
+
+CREATE OR REPLACE FUNCTION HasSufficientBalance(
+p_account_id NUMBER,
+p_amount NUMBER
+)
+RETURN VARCHAR2
+IS
+v_balance NUMBER;
+BEGIN
+SELECT Balance
+INTO v_balance
+FROM Accounts
+WHERE AccountID = p_account_id;
+
+```
+IF v_balance >= p_amount THEN
+    RETURN 'TRUE';
+ELSE
+    RETURN 'FALSE';
+END IF;
+```
+
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+RETURN 'ACCOUNT NOT FOUND';
+END;
+/
+
+-- =========================================
+-- TESTING ALL FUNCTIONS
+-- =========================================
+
+SELECT CalculateAge(
+TO_DATE('15-08-2000','DD-MM-YYYY')
+) AS AGE
+FROM DUAL;
+
+SELECT CalculateMonthlyInstallment(
+500000,
+8,
+5
+) AS MONTHLY_INSTALLMENT
+FROM DUAL;
+
+SELECT HasSufficientBalance(
+101,
+3000
+) AS BALANCE_STATUS
+FROM DUAL;
+

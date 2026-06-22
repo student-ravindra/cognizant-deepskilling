@@ -1,0 +1,284 @@
+-- =========================================
+-- CREATE TABLES
+-- =========================================
+
+CREATE TABLE Customers (
+    CustomerID NUMBER PRIMARY KEY,
+    CustomerName VARCHAR2(100),
+    Balance NUMBER(10,2)
+);
+
+CREATE TABLE Employees (
+    EmployeeID NUMBER PRIMARY KEY,
+    EmployeeName VARCHAR2(100),
+    Salary NUMBER(10,2)
+);
+
+CREATE TABLE Accounts (
+    AccountID NUMBER PRIMARY KEY,
+    CustomerID NUMBER,
+    Balance NUMBER(10,2)
+);
+
+-- =========================================
+-- SAMPLE DATA
+-- =========================================
+
+INSERT INTO Customers VALUES (1,'Ravi',15000);
+INSERT INTO Customers VALUES (2,'Priya',12000);
+
+INSERT INTO Employees VALUES (101,'Rahul',50000);
+INSERT INTO Employees VALUES (102,'Anjali',60000);
+
+INSERT INTO Accounts VALUES (201,1,10000);
+INSERT INTO Accounts VALUES (202,1,5000);
+INSERT INTO Accounts VALUES (203,2,12000);
+
+COMMIT;
+
+-- =========================================
+-- PACKAGE 1 : CustomerManagement
+-- =========================================
+
+CREATE OR REPLACE PACKAGE CustomerManagement AS
+
+    PROCEDURE AddCustomer(
+        p_id NUMBER,
+        p_name VARCHAR2,
+        p_balance NUMBER
+    );
+
+    PROCEDURE UpdateCustomer(
+        p_id NUMBER,
+        p_name VARCHAR2
+    );
+
+    FUNCTION GetCustomerBalance(
+        p_id NUMBER
+    ) RETURN NUMBER;
+
+END CustomerManagement;
+/
+
+CREATE OR REPLACE PACKAGE BODY CustomerManagement AS
+
+    PROCEDURE AddCustomer(
+        p_id NUMBER,
+        p_name VARCHAR2,
+        p_balance NUMBER
+    )
+    IS
+    BEGIN
+        INSERT INTO Customers
+        (
+            CustomerID,
+            CustomerName,
+            Balance
+        )
+        VALUES
+        (
+            p_id,
+            p_name,
+            p_balance
+        );
+    END AddCustomer;
+
+    PROCEDURE UpdateCustomer(
+        p_id NUMBER,
+        p_name VARCHAR2
+    )
+    IS
+    BEGIN
+        UPDATE Customers
+        SET CustomerName = p_name
+        WHERE CustomerID = p_id;
+    END UpdateCustomer;
+
+    FUNCTION GetCustomerBalance(
+        p_id NUMBER
+    )
+    RETURN NUMBER
+    IS
+        v_balance NUMBER;
+    BEGIN
+        SELECT Balance
+        INTO v_balance
+        FROM Customers
+        WHERE CustomerID = p_id;
+
+        RETURN v_balance;
+    END GetCustomerBalance;
+
+END CustomerManagement;
+/
+
+-- =========================================
+-- PACKAGE 2 : EmployeeManagement
+-- =========================================
+
+CREATE OR REPLACE PACKAGE EmployeeManagement AS
+
+    PROCEDURE HireEmployee(
+        p_id NUMBER,
+        p_name VARCHAR2,
+        p_salary NUMBER
+    );
+
+    PROCEDURE UpdateEmployee(
+        p_id NUMBER,
+        p_salary NUMBER
+    );
+
+    FUNCTION CalculateAnnualSalary(
+        p_id NUMBER
+    ) RETURN NUMBER;
+
+END EmployeeManagement;
+/
+
+CREATE OR REPLACE PACKAGE BODY EmployeeManagement AS
+
+    PROCEDURE HireEmployee(
+        p_id NUMBER,
+        p_name VARCHAR2,
+        p_salary NUMBER
+    )
+    IS
+    BEGIN
+        INSERT INTO Employees
+        (
+            EmployeeID,
+            EmployeeName,
+            Salary
+        )
+        VALUES
+        (
+            p_id,
+            p_name,
+            p_salary
+        );
+    END HireEmployee;
+
+    PROCEDURE UpdateEmployee(
+        p_id NUMBER,
+        p_salary NUMBER
+    )
+    IS
+    BEGIN
+        UPDATE Employees
+        SET Salary = p_salary
+        WHERE EmployeeID = p_id;
+    END UpdateEmployee;
+
+    FUNCTION CalculateAnnualSalary(
+        p_id NUMBER
+    )
+    RETURN NUMBER
+    IS
+        v_salary NUMBER;
+    BEGIN
+        SELECT Salary
+        INTO v_salary
+        FROM Employees
+        WHERE EmployeeID = p_id;
+
+        RETURN v_salary * 12;
+    END CalculateAnnualSalary;
+
+END EmployeeManagement;
+/
+
+-- =========================================
+-- PACKAGE 3 : AccountOperations
+-- =========================================
+
+CREATE OR REPLACE PACKAGE AccountOperations AS
+
+    PROCEDURE OpenAccount(
+        p_accid NUMBER,
+        p_custid NUMBER,
+        p_balance NUMBER
+    );
+
+    PROCEDURE CloseAccount(
+        p_accid NUMBER
+    );
+
+    FUNCTION GetTotalBalance(
+        p_custid NUMBER
+    ) RETURN NUMBER;
+
+END AccountOperations;
+/
+
+CREATE OR REPLACE PACKAGE BODY AccountOperations AS
+
+    PROCEDURE OpenAccount(
+        p_accid NUMBER,
+        p_custid NUMBER,
+        p_balance NUMBER
+    )
+    IS
+    BEGIN
+        INSERT INTO Accounts
+        (
+            AccountID,
+            CustomerID,
+            Balance
+        )
+        VALUES
+        (
+            p_accid,
+            p_custid,
+            p_balance
+        );
+    END OpenAccount;
+
+    PROCEDURE CloseAccount(
+        p_accid NUMBER
+    )
+    IS
+    BEGIN
+        DELETE FROM Accounts
+        WHERE AccountID = p_accid;
+    END CloseAccount;
+
+    FUNCTION GetTotalBalance(
+        p_custid NUMBER
+    )
+    RETURN NUMBER
+    IS
+        v_total NUMBER;
+    BEGIN
+        SELECT NVL(SUM(Balance),0)
+        INTO v_total
+        FROM Accounts
+        WHERE CustomerID = p_custid;
+
+        RETURN v_total;
+    END GetTotalBalance;
+
+END AccountOperations;
+/
+
+-- =========================================
+-- TESTING
+-- =========================================
+
+BEGIN
+    CustomerManagement.AddCustomer(
+        3,
+        'Kiran',
+        20000
+    );
+END;
+/
+
+SELECT CustomerManagement.GetCustomerBalance(1)
+FROM DUAL;
+
+SELECT EmployeeManagement.CalculateAnnualSalary(101)
+FROM DUAL;
+
+SELECT AccountOperations.GetTotalBalance(1)
+FROM DUAL;
