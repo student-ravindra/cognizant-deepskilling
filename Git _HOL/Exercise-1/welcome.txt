@@ -1,0 +1,2 @@
+Welcome to Git Hands-on Lab.
+This is my first Git exercise.
