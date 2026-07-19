@@ -1,0 +1,2 @@
+This file was created in GitNewBranch.
+Exercise 3 - Branching and Merging.
