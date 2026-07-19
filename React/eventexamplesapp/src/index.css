@@ -1,0 +1,18 @@
+body {
+  margin: 20px;
+  font-family: Arial, sans-serif;
+  background-color: white;
+  color: black;
+}
+
+h1 {
+  color: green;
+}
+
+button {
+  margin: 3px;
+}
+
+input {
+  margin-left: 10px;
+}
