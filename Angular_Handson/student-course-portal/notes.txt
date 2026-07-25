@@ -1,0 +1,32 @@
+Angular Project Structure Notes
+
+1. angular.json
+   Contains the Angular workspace configuration, including build, serve, test, and project settings.
+
+2. tsconfig.json
+   The base TypeScript configuration shared by the entire Angular project.
+
+3. tsconfig.app.json
+   TypeScript configuration specifically used for compiling the application source code.
+
+4. package.json
+   Contains project metadata, dependencies, scripts, and npm package information.
+
+5. src/main.ts
+   The main entry point of the Angular application that bootstraps the application.
+
+6. src/app/app.config.ts
+   Configures the standalone Angular application, including providers and routing.
+
+7. src/app/app.ts
+   Defines the root App component that serves as the starting point of the application's UI.
+
+8. src/index.html
+   The main HTML page that hosts the Angular application using the <app-root> element.
+   Budgets Configuration
+
+maximumWarning
+Displays a warning when the application bundle size exceeds the specified limit.
+
+maximumError
+Stops the production build with an error if the bundle size exceeds the specified limit.
