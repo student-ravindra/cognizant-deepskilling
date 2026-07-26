@@ -7,8 +7,11 @@
   <h3>{{ course.name }}</h3>
 
   <p>ID: {{ course.id }}</p>
+
   <p>Code: {{ course.code }}</p>
+
   <p>Credits: {{ course.credits | creditLabel }}</p>
+
 
   <div [ngSwitch]="course.gradeStatus">
 
@@ -26,12 +29,32 @@
 
   </div>
 
-  <button (click)="toggleDetails()">
-    Show Details
+<!-- Enroll / Unenroll Button -->
+<ng-container *ngIf="enrolledIds$ | async as enrolledIds">
+
+  <button (click)="toggleEnrollment(enrolledIds)">
+    {{ isCourseEnrolled(enrolledIds) ? 'Unenroll' : 'Enroll' }}
   </button>
 
- <button (click)="toggleEnrollment()">
-  {{ isCourseEnrolled() ? 'Unenroll' : 'Enroll' }}
-</button>
+</ng-container>
+
+
+  <!-- Show Details Button -->
+  <button (click)="toggleDetails()">
+    {{ isExpanded ? 'Hide Details' : 'Show Details' }}
+  </button>
+
+
+  <!-- Details Section -->
+  <div *ngIf="isExpanded">
+
+    <p>Course details:</p>
+
+    <p>
+      Status: {{ course.gradeStatus }}
+    </p>
+
+  </div>
+
 
 </div>

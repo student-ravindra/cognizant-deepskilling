@@ -6,18 +6,36 @@ import {
   OnChanges,
   SimpleChanges
 } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
-import { EnrollmentService } from '../../services/enrollment';
+
 import { CreditLabelPipe } from '../../pipes/credit-label-pipe';
+
+import { Store } from '@ngrx/store';
+import { Observable, startWith } from 'rxjs';
+
+import {
+  enrollInCourse,
+  unenrollFromCourse
+} from '../../store/enrollment/enrollment.actions';
+
+import {
+  selectEnrolledIds
+} from '../../store/enrollment/enrollment.selectors';
+
 
 @Component({
   selector: 'app-course-card',
   standalone: true,
-  imports: [CommonModule, CreditLabelPipe],
+  imports: [
+    CommonModule,
+    CreditLabelPipe
+  ],
   templateUrl: './course-card.html',
   styleUrl: './course-card.css'
 })
 export class CourseCardComponent implements OnChanges {
+
 
   @Input() course!: {
     id: number;
@@ -28,32 +46,54 @@ export class CourseCardComponent implements OnChanges {
     enrolled: boolean;
   };
 
+
   @Output() enrollRequested = new EventEmitter<number>();
+
+
+  enrolledIds$: Observable<number[]>;
 
   isExpanded = false;
 
 
-  constructor(private enrollmentService: EnrollmentService) {}
+  constructor(
+  private store: Store
+) {
+  this.enrolledIds$ = this.store
+    .select(selectEnrolledIds)
+    .pipe(
+      startWith([])
+    );
+}
+
 
 
   ngOnChanges(changes: SimpleChanges): void {
 
     console.log('Course Input Changed');
-    console.log('Previous Value:', changes['course']?.previousValue);
-    console.log('Current Value:', changes['course']?.currentValue);
+    console.log(
+      'Previous Value:',
+      changes['course']?.previousValue
+    );
+
+    console.log(
+      'Current Value:',
+      changes['course']?.currentValue
+    );
 
   }
+
 
 
   get cardClasses() {
 
     return {
-      'card--enrolled': this.isCourseEnrolled(),
+      'card--enrolled': this.course.enrolled,
       'card--full': this.course.credits >= 4,
       'expanded': this.isExpanded
     };
 
   }
+
 
 
   getBorderColor(): string {
@@ -74,28 +114,45 @@ export class CourseCardComponent implements OnChanges {
   }
 
 
-  isCourseEnrolled(): boolean {
 
-    return this.enrollmentService.isEnrolled(this.course.id);
+  isCourseEnrolled(enrolledIds: number[]): boolean {
+
+    return enrolledIds.includes(this.course.id);
 
   }
 
 
-  toggleEnrollment(): void {
 
-    if (this.isCourseEnrolled()) {
+  toggleEnrollment(enrolledIds: number[]): void {
 
-      this.enrollmentService.unenroll(this.course.id);
+
+    if (this.isCourseEnrolled(enrolledIds)) {
+
+
+      this.store.dispatch(
+        unenrollFromCourse({
+          courseId: this.course.id
+        })
+      );
+
 
     } else {
 
-      this.enrollmentService.enroll(this.course.id);
+
+      this.store.dispatch(
+        enrollInCourse({
+          courseId: this.course.id
+        })
+      );
+
 
     }
+
 
     this.enrollRequested.emit(this.course.id);
 
   }
+
 
 
   toggleDetails(): void {
