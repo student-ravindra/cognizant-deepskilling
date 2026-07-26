@@ -14,7 +14,6 @@ export class StudentProfile implements OnInit {
 
   enrolledCourses: Course[] = [];
 
-
   constructor(private enrollmentService: EnrollmentService) {}
 
 
@@ -23,8 +22,13 @@ export class StudentProfile implements OnInit {
     this.enrollmentService.enrolledCourses$
       .subscribe(() => {
 
-        this.enrolledCourses =
-          this.enrollmentService.getEnrolledCourses();
+        this.enrollmentService
+          .getEnrolledCourses()
+          .subscribe(courses => {
+
+            this.enrolledCourses = courses;
+
+          });
 
       });
 

@@ -1,0 +1,45 @@
+{
+  "courses": [
+    {
+      "id": 1,
+      "name": "Angular",
+      "code": "ANG101",
+      "credits": 4,
+      "gradeStatus": "pending",
+      "enrolled": false
+    },
+
+    {
+      "id": 2,
+      "name": "Spring Boot",
+      "code": "SPR201",
+      "credits": 5,
+      "gradeStatus": "passed",
+      "enrolled": true
+    },
+    {
+  "id": 3,
+  "name": "Test Course",
+  "code": "TEST",
+  "credits": 0,
+  "gradeStatus": "pending",
+  "enrolled": false
+}
+  ],
+  "students": [
+  {
+    "id": 1,
+    "name": "Ravi",
+    "email": "ravi@gmail.com",
+    "courseId": 1
+  }
+],
+"enrollments": [
+  {
+    "id": 1,
+    "courseId": 1,
+    "studentId": 1
+  }
+]
+  
+}

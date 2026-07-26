@@ -17,7 +17,10 @@ export class CourseSummaryWidget implements OnInit {
 
   ngOnInit(): void {
 
-    this.courseCount = this.courseService.getCourses().length;
+    this.courseService.getCourses()
+  .subscribe(courses => {
+    this.courseCount = courses.length;
+  });
 
   }
 

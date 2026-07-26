@@ -3,23 +3,34 @@
   <h2>{{ course.name }}</h2>
 
   <p>
-    <strong>Course Code:</strong>
-    {{ course.code }}
+    <strong>Code:</strong> {{ course.code }}
   </p>
 
   <p>
-    <strong>Credits:</strong>
-    {{ course.credits }}
+    <strong>Credits:</strong> {{ course.credits }}
   </p>
 
   <p>
-    <strong>Status:</strong>
-    {{ course.gradeStatus }}
+    <strong>Status:</strong> {{ course.gradeStatus }}
   </p>
 
-  <p>
-    <strong>Enrollment:</strong>
-    {{ course.enrolled ? 'Enrolled' : 'Not Enrolled' }}
-  </p>
+
+  <h3>Enrolled Students</h3>
+
+  <div *ngIf="students.length > 0; else noStudents">
+
+    <ul>
+      <li *ngFor="let student of students">
+        {{ student.name }} - {{ student.email }}
+      </li>
+    </ul>
+
+  </div>
+
+
+  <ng-template #noStudents>
+    <p>No students enrolled.</p>
+  </ng-template>
+
 
 </div>

@@ -30,7 +30,10 @@ export class Home implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     // Getting live course count from shared CourseService
-    this.availableCourses = this.courseService.getCourses().length;
+    this.courseService.getCourses()
+  .subscribe(courses => {
+    this.availableCourses = courses.length;
+  });
 
     console.log('HomeComponent initialised — courses loaded');
 

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Course } from '../models/course';
 import { CourseService } from './course';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, map, switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,10 @@ export class EnrollmentService {
     this.enrolledCoursesSubject.asObservable();
 
 
-  constructor(private courseService: CourseService) {}
+  constructor(
+    private courseService: CourseService,
+    private http: HttpClient
+  ) {}
 
 
   enroll(courseId: number): void {
@@ -54,12 +58,24 @@ export class EnrollmentService {
   }
 
 
-  getEnrolledCourses(): Course[] {
+  getEnrolledCourses(): Observable<Course[]> {
 
-    return this.enrolledCourseIds
-      .map(id => this.courseService.getCourseById(id))
-      .filter((course): course is Course => course !== undefined);
+    return this.http.get<Course[]>('http://localhost:3000/courses')
+      .pipe(
+        map((courses: Course[]) =>
+          courses.filter((course: Course) =>
+            this.enrolledCourseIds.includes(course.id)
+          )
+        )
+      );
 
   }
+  getStudentsByCourse(courseId: number): Observable<any[]> {
+
+  return this.http.get<any[]>(
+    `http://localhost:3000/students?courseId=${courseId}`
+  );
+
+}
 
 }

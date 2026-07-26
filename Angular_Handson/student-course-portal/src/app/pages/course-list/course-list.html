@@ -3,6 +3,9 @@
 <p *ngIf="isLoading">Loading courses...</p>
 
 <ng-container *ngIf="!isLoading">
+  <p *ngIf="errorMessage">
+  {{ errorMessage }}
+</p>
 
   <ng-container *ngIf="courses.length > 0; else noCourses">
 

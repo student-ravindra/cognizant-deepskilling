@@ -19,6 +19,7 @@ export class CourseList implements OnInit {
 
   courses: Course[] = [];
   searchTerm = '';
+  errorMessage = '';
 
   selectedCourseId: number | null = null;
 
@@ -35,7 +36,18 @@ export class CourseList implements OnInit {
     this.isLoading = true;
 
     setTimeout(() => {
-      this.courses = this.courseService.getCourses();
+      this.courseService.getCourses()
+  .subscribe({
+    next: courses => {
+      this.courses = courses;
+    },
+    error: err => {
+       this.errorMessage = err.message;
+    },
+    complete: () => {
+      this.isLoading = false;
+    }
+  });
       this.isLoading = false;
     }, 1500);
 
