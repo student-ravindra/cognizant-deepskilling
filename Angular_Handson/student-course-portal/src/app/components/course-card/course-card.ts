@@ -8,11 +8,11 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-
-import { CreditLabelPipe } from '../../pipes/credit-label-pipe';
+import { Observable } from 'rxjs';
 
 import { Store } from '@ngrx/store';
-import { Observable, startWith } from 'rxjs';
+
+import { CreditLabelPipe } from '../../pipes/credit-label-pipe';
 
 import {
   enrollInCourse,
@@ -20,9 +20,8 @@ import {
 } from '../../store/enrollment/enrollment.actions';
 
 import {
-  selectEnrolledIds
+  selectEnrolledCourseIds
 } from '../../store/enrollment/enrollment.selectors';
-
 
 @Component({
   selector: 'app-course-card',
@@ -36,7 +35,6 @@ import {
 })
 export class CourseCardComponent implements OnChanges {
 
-
   @Input() course!: {
     id: number;
     name: string;
@@ -46,26 +44,17 @@ export class CourseCardComponent implements OnChanges {
     enrolled: boolean;
   };
 
-
   @Output() enrollRequested = new EventEmitter<number>();
 
-
   enrolledIds$: Observable<number[]>;
-
   isExpanded = false;
 
+  constructor(private store: Store) {
 
-  constructor(
-  private store: Store
-) {
-  this.enrolledIds$ = this.store
-    .select(selectEnrolledIds)
-    .pipe(
-      startWith([])
-    );
-}
+    this.enrolledIds$ =
+      this.store.select(selectEnrolledCourseIds);
 
-
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
 
@@ -82,19 +71,15 @@ export class CourseCardComponent implements OnChanges {
 
   }
 
-
-
   get cardClasses() {
 
     return {
       'card--enrolled': this.course.enrolled,
       'card--full': this.course.credits >= 4,
-      'expanded': this.isExpanded
+      expanded: this.isExpanded
     };
 
   }
-
-
 
   getBorderColor(): string {
 
@@ -113,21 +98,15 @@ export class CourseCardComponent implements OnChanges {
 
   }
 
-
-
   isCourseEnrolled(enrolledIds: number[]): boolean {
 
     return enrolledIds.includes(this.course.id);
 
   }
 
-
-
   toggleEnrollment(enrolledIds: number[]): void {
 
-
     if (this.isCourseEnrolled(enrolledIds)) {
-
 
       this.store.dispatch(
         unenrollFromCourse({
@@ -135,9 +114,7 @@ export class CourseCardComponent implements OnChanges {
         })
       );
 
-
     } else {
-
 
       this.store.dispatch(
         enrollInCourse({
@@ -145,15 +122,11 @@ export class CourseCardComponent implements OnChanges {
         })
       );
 
-
     }
-
 
     this.enrollRequested.emit(this.course.id);
 
   }
-
-
 
   toggleDetails(): void {
 
