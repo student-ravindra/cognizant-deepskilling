@@ -7,13 +7,13 @@ import {
   SimpleChanges
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { EnrollmentService } from '../../services/enrollment';
 import { CreditLabelPipe } from '../../pipes/credit-label-pipe';
-import { Highlight } from '../../directives/highlight';
 
 @Component({
   selector: 'app-course-card',
   standalone: true,
-  imports: [CommonModule, CreditLabelPipe, Highlight],
+  imports: [CommonModule, CreditLabelPipe],
   templateUrl: './course-card.html',
   styleUrl: './course-card.css'
 })
@@ -23,7 +23,7 @@ export class CourseCardComponent implements OnChanges {
     id: number;
     name: string;
     code: string;
-    credits: number | null;
+    credits: number;
     gradeStatus: string;
     enrolled: boolean;
   };
@@ -32,33 +32,76 @@ export class CourseCardComponent implements OnChanges {
 
   isExpanded = false;
 
+
+  constructor(private enrollmentService: EnrollmentService) {}
+
+
   ngOnChanges(changes: SimpleChanges): void {
+
     console.log('Course Input Changed');
     console.log('Previous Value:', changes['course']?.previousValue);
     console.log('Current Value:', changes['course']?.currentValue);
+
   }
 
-  // Getter keeps templates clean by moving class logic to the component.
+
   get cardClasses() {
+
     return {
-      'card--enrolled': this.course.enrolled,
-      'card--full': (this.course.credits ?? 0) >= 4,
+      'card--enrolled': this.isCourseEnrolled(),
+      'card--full': this.course.credits >= 4,
       'expanded': this.isExpanded
     };
+
   }
+
 
   getBorderColor(): string {
+
     switch (this.course.gradeStatus) {
+
       case 'passed':
         return 'green';
+
       case 'failed':
         return 'red';
+
       default:
         return 'grey';
+
     }
+
   }
 
-  toggleDetails(): void {
-    this.isExpanded = !this.isExpanded;
+
+  isCourseEnrolled(): boolean {
+
+    return this.enrollmentService.isEnrolled(this.course.id);
+
   }
+
+
+  toggleEnrollment(): void {
+
+    if (this.isCourseEnrolled()) {
+
+      this.enrollmentService.unenroll(this.course.id);
+
+    } else {
+
+      this.enrollmentService.enroll(this.course.id);
+
+    }
+
+    this.enrollRequested.emit(this.course.id);
+
+  }
+
+
+  toggleDetails(): void {
+
+    this.isExpanded = !this.isExpanded;
+
+  }
+
 }

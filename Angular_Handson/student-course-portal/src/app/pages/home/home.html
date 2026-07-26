@@ -21,13 +21,14 @@ type="text"
 placeholder="Search courses"
 [(ngModel)]="searchTerm">
 
-
+<app-course-summary-widget></app-course-summary-widget>
 <p>
 Searching for: {{searchTerm}}
 </p>
 <h2>Home Page</h2>
 
 <p>Available Courses: {{ availableCourses }}</p>
+<app-notification></app-notification>
 
 
 <!-- 

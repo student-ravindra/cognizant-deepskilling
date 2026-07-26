@@ -30,8 +30,8 @@
     Show Details
   </button>
 
-  <button (click)="enrollRequested.emit(course.id)">
-    Enroll
-  </button>
+ <button (click)="toggleEnrollment()">
+  {{ isCourseEnrolled() ? 'Unenroll' : 'Enroll' }}
+</button>
 
 </div>
