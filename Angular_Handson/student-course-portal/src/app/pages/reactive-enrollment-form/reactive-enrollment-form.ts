@@ -22,6 +22,8 @@ export class ReactiveEnrollmentForm implements OnInit {
 
   enrollForm!: FormGroup;
 
+  submitted = false;
+
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
@@ -92,8 +94,8 @@ export class ReactiveEnrollmentForm implements OnInit {
 
 
   get additionalCourses(): FormArray<FormControl> {
-  return this.enrollForm.get('additionalCourses') as FormArray<FormControl>;
-}
+    return this.enrollForm.get('additionalCourses') as FormArray<FormControl>;
+  }
 
 
   addCourse(): void {
@@ -114,8 +116,26 @@ export class ReactiveEnrollmentForm implements OnInit {
 
   onSubmit(): void {
 
+    this.submitted = true;
+
     console.log(this.enrollForm.value);
     console.log(this.enrollForm.getRawValue());
+
+  }
+
+
+  // CanDeactivate Guard check
+  canDeactivate(): boolean {
+
+    if (this.enrollForm.dirty) {
+
+      return window.confirm(
+        'You have unsaved changes. Leave?'
+      );
+
+    }
+
+    return true;
 
   }
 

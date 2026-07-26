@@ -6,11 +6,12 @@
 
   <ng-container *ngIf="courses.length > 0; else noCourses">
 
-    <app-course-card
-      *ngFor="let c of courses; let i = index; trackBy: trackByCourseId"
-      [course]="c"
-      (enrollRequested)="onEnroll($event)">
-    </app-course-card>
+<app-course-card
+  *ngFor="let c of courses; let i = index; trackBy: trackByCourseId"
+  [course]="c"
+  (enrollRequested)="onEnroll($event)"
+  (click)="viewCourse(c.id)">
+</app-course-card>
 
   </ng-container>
 
@@ -23,3 +24,8 @@
 <p *ngIf="selectedCourseId">
   Selected course ID: {{ selectedCourseId }}
 </p>
+<input
+  type="text"
+  [(ngModel)]="searchTerm"
+  (input)="updateSearch()"
+  placeholder="Search courses">
